@@ -24,8 +24,9 @@ use Twig\Extension\AbstractExtension;
 use Twig\Extension\CoreExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class IntlExtension extends AbstractExtension
+final class IntlExtension extends AbstractExtension implements ResetInterface
 {
     private static function availableDateFormats(): array
     {
@@ -195,6 +196,17 @@ final class IntlExtension extends AbstractExtension
     {
         $this->dateFormatterPrototype = $dateFormatterPrototype;
         $this->numberFormatterPrototype = $numberFormatterPrototype;
+    }
+
+    /**
+     * Clears request-scoped formatter / pattern memoization for long-running workers.
+     */
+    public function reset(): void
+    {
+        $this->prototypePatterns = [];
+        $this->dateFormatters = [];
+        $this->numberFormatters = [];
+        $this->listFormatters = [];
     }
 
     public function getFilters(): array
